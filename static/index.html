@@ -10,58 +10,78 @@
   <header class="barre">
     <h1>Contrats &amp; échéances</h1>
     <div class="actions">
-      <a class="bouton secondaire" href="/api/export.csv">Export CSV</a>
-      <a class="bouton secondaire" href="/api/export.ics" title="À importer dans Outlook, Google Agenda…">Export agenda (.ics)</a>
+      <a class="bouton secondaire" id="lien-csv" href="/api/export.csv">Export CSV</a>
+      <a class="bouton secondaire" id="lien-ics" href="/api/export.ics" title="À importer dans Outlook, Google Agenda…">Export agenda (.ics)</a>
       <button class="bouton" id="btn-nouveau">+ Nouveau contrat</button>
     </div>
   </header>
 
-  <main>
-    <section class="tuiles" id="tuiles"></section>
+  <div class="mise-en-page">
+    <nav class="dossiers" aria-label="Immeubles">
+      <div class="dossiers-tete">
+        <h2>Immeubles</h2>
+        <button class="bouton secondaire petit" id="btn-nouvel-immeuble">+ Immeuble</button>
+      </div>
+      <ul id="liste-dossiers"></ul>
+    </nav>
 
-    <section class="filtres">
-      <input type="search" id="recherche" placeholder="Rechercher (nom, partenaire, référence, responsable…)">
-      <select id="filtre-statut">
-        <option value="">Tous les statuts</option>
-        <option value="urgent">Urgent</option>
-        <option value="a_surveiller">À surveiller</option>
-        <option value="ok">OK</option>
-        <option value="indetermine">Durée indéterminée</option>
-        <option value="expire">Expiré</option>
-        <option value="resilie">Résilié</option>
-      </select>
-      <select id="filtre-categorie"><option value="">Toutes les catégories</option></select>
-    </section>
+    <main>
+      <div class="titre-dossier">
+        <div>
+          <h2 id="nom-dossier">Tous les immeubles</h2>
+          <p class="sous" id="adresse-dossier"></p>
+        </div>
+        <button class="bouton secondaire petit" id="btn-modifier-immeuble" hidden>Modifier l'immeuble</button>
+      </div>
 
-    <div class="table-conteneur">
-      <table>
-        <thead>
-          <tr>
-            <th>Statut</th>
-            <th>Contrat</th>
-            <th>Partenaire</th>
-            <th>Prochaine action</th>
-            <th>Limite résiliation</th>
-            <th>Échéance</th>
-            <th>Reconduction</th>
-            <th class="num">Montant</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="liste"></tbody>
-      </table>
-      <p class="vide" id="vide" hidden>Aucun contrat. Cliquez sur « + Nouveau contrat » pour commencer.</p>
-    </div>
-  </main>
+      <section class="tuiles" id="tuiles"></section>
+
+      <section class="filtres">
+        <input type="search" id="recherche" placeholder="Rechercher (nom, partenaire, référence, responsable…)">
+        <select id="filtre-statut">
+          <option value="">Tous les statuts</option>
+          <option value="urgent">Urgent</option>
+          <option value="a_surveiller">À surveiller</option>
+          <option value="ok">OK</option>
+          <option value="indetermine">Durée indéterminée</option>
+          <option value="expire">Expiré</option>
+          <option value="resilie">Résilié</option>
+        </select>
+        <select id="filtre-categorie"><option value="">Toutes les catégories</option></select>
+      </section>
+
+      <div class="table-conteneur">
+        <table>
+          <thead>
+            <tr>
+              <th>Statut</th>
+              <th>Contrat</th>
+              <th class="col-immeuble">Immeuble</th>
+              <th>Partenaire</th>
+              <th>Prochaine action</th>
+              <th>Limite résiliation</th>
+              <th>Échéance</th>
+              <th>Reconduction</th>
+              <th class="num">Montant</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="liste"></tbody>
+        </table>
+        <p class="vide" id="vide" hidden></p>
+      </div>
+    </main>
+  </div>
 
   <dialog id="dialogue">
     <form id="formulaire" method="dialog">
       <h2 id="titre-form">Nouveau contrat</h2>
       <div class="grille">
         <label class="large">Nom du contrat *<input name="nom" required></label>
+        <label class="large">Immeuble (dossier)<select name="immeuble_id" id="select-immeuble"></select></label>
         <label>Référence<input name="reference"></label>
         <label>Partenaire (fournisseur / client)<input name="partenaire"></label>
-        <label>Catégorie<input name="categorie" list="categories" placeholder="Assurance, Maintenance, Bail…"></label>
+        <label>Catégorie<input name="categorie" list="categories" placeholder="Assurance, Ascenseur, Nettoyage…"></label>
         <label>Responsable<input name="responsable"></label>
 
         <label>Date de début<input type="date" name="date_debut"></label>
@@ -93,7 +113,25 @@
       <div class="pied">
         <button type="button" class="bouton danger" id="btn-supprimer" hidden>Supprimer</button>
         <span class="espace"></span>
-        <button type="button" class="bouton secondaire" id="btn-annuler">Annuler</button>
+        <button type="button" class="bouton secondaire" data-fermer>Annuler</button>
+        <button type="submit" class="bouton">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dialogue-immeuble">
+    <form id="formulaire-immeuble" method="dialog">
+      <h2 id="titre-form-immeuble">Nouvel immeuble</h2>
+      <div class="grille">
+        <label class="large">Nom de l'immeuble *<input name="nom" required placeholder="Résidence Les Tilleuls"></label>
+        <label class="large">Adresse<input name="adresse"></label>
+        <label class="large">Notes<textarea name="notes" rows="3"></textarea></label>
+      </div>
+      <p class="erreur" id="erreur-immeuble" hidden></p>
+      <div class="pied">
+        <button type="button" class="bouton danger" id="btn-supprimer-immeuble" hidden>Supprimer</button>
+        <span class="espace"></span>
+        <button type="button" class="bouton secondaire" data-fermer>Annuler</button>
         <button type="submit" class="bouton">Enregistrer</button>
       </div>
     </form>

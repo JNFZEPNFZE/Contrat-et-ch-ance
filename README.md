@@ -16,6 +16,11 @@ Puis ouvrir <http://localhost:8000>. Les données sont stockées dans `contrats.
 
 ## Fonctionnalités
 
+- **Un dossier par immeuble** : chaque immeuble (nom, adresse, notes) regroupe ses
+  contrats, avec son propre tableau de bord et ses exports. La colonne de gauche
+  affiche, pour chaque immeuble, le nombre de contrats et d'actions urgentes.
+  La vue « Tous les immeubles » donne la vision d'ensemble ; les contrats non
+  rattachés sont dans « Sans immeuble ». Un immeuble ne peut être supprimé que vide.
 - Fiche contrat : nom, référence, partenaire, catégorie, responsable, dates,
   montant et périodicité, notes.
 - **Reconduction tacite** : l'échéance est automatiquement reportée de la durée
@@ -27,7 +32,7 @@ Puis ouvrir <http://localhost:8000>. Les données sont stockées dans `contrats.
   défaut), *À surveiller* (90 j de plus), *OK*, *Expiré*, *Résilié*, *Durée indéterminée*.
 - Tableau de bord : contrats actifs, actions urgentes, coût annuel estimé.
 - Recherche et filtres par statut / catégorie.
-- Exports : **CSV** (compatible Excel) et **agenda .ics** (Outlook, Google
+- Exports (de l'immeuble affiché, ou de tous) : **CSV** (compatible Excel) et **agenda .ics** (Outlook, Google
   Agenda, Apple Calendrier) avec un rappel 7 jours avant chaque date.
 
 ## Tests
@@ -49,8 +54,11 @@ python3 -m unittest discover -s tests -v
 
 | Méthode | URL | Description |
 |---|---|---|
-| GET | `/api/contrats` | Liste des contrats avec échéances calculées |
+| GET | `/api/contrats?immeuble=<id\|aucun>` | Liste des contrats avec échéances calculées (filtre facultatif) |
 | POST | `/api/contrats` | Créer un contrat |
 | GET / PUT / DELETE | `/api/contrats/<id>` | Lire / modifier / supprimer |
-| GET | `/api/export.csv` | Export tableur |
-| GET | `/api/export.ics` | Export agenda |
+| GET | `/api/immeubles` | Liste des immeubles avec nombre de contrats / d'alertes |
+| POST | `/api/immeubles` | Créer un immeuble |
+| GET / PUT / DELETE | `/api/immeubles/<id>` | Lire / modifier / supprimer (si vide) |
+| GET | `/api/export.csv?immeuble=…` | Export tableur |
+| GET | `/api/export.ics?immeuble=…` | Export agenda |
