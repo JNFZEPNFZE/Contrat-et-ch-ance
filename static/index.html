@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contrats & échéances</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="barre">
+    <h1>Contrats &amp; échéances</h1>
+    <div class="actions">
+      <a class="bouton secondaire" href="/api/export.csv">Export CSV</a>
+      <a class="bouton secondaire" href="/api/export.ics" title="À importer dans Outlook, Google Agenda…">Export agenda (.ics)</a>
+      <button class="bouton" id="btn-nouveau">+ Nouveau contrat</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="tuiles" id="tuiles"></section>
+
+    <section class="filtres">
+      <input type="search" id="recherche" placeholder="Rechercher (nom, partenaire, référence, responsable…)">
+      <select id="filtre-statut">
+        <option value="">Tous les statuts</option>
+        <option value="urgent">Urgent</option>
+        <option value="a_surveiller">À surveiller</option>
+        <option value="ok">OK</option>
+        <option value="indetermine">Durée indéterminée</option>
+        <option value="expire">Expiré</option>
+        <option value="resilie">Résilié</option>
+      </select>
+      <select id="filtre-categorie"><option value="">Toutes les catégories</option></select>
+    </section>
+
+    <div class="table-conteneur">
+      <table>
+        <thead>
+          <tr>
+            <th>Statut</th>
+            <th>Contrat</th>
+            <th>Partenaire</th>
+            <th>Prochaine action</th>
+            <th>Limite résiliation</th>
+            <th>Échéance</th>
+            <th>Reconduction</th>
+            <th class="num">Montant</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="liste"></tbody>
+      </table>
+      <p class="vide" id="vide" hidden>Aucun contrat. Cliquez sur « + Nouveau contrat » pour commencer.</p>
+    </div>
+  </main>
+
+  <dialog id="dialogue">
+    <form id="formulaire" method="dialog">
+      <h2 id="titre-form">Nouveau contrat</h2>
+      <div class="grille">
+        <label class="large">Nom du contrat *<input name="nom" required></label>
+        <label>Référence<input name="reference"></label>
+        <label>Partenaire (fournisseur / client)<input name="partenaire"></label>
+        <label>Catégorie<input name="categorie" list="categories" placeholder="Assurance, Maintenance, Bail…"></label>
+        <label>Responsable<input name="responsable"></label>
+
+        <label>Date de début<input type="date" name="date_debut"></label>
+        <label>Date de fin / échéance<input type="date" name="date_fin"></label>
+
+        <label class="case"><input type="checkbox" name="reconduction_tacite"> Reconduction tacite</label>
+        <label>Durée de reconduction (mois)<input type="number" min="1" name="duree_reconduction_mois" value="12"></label>
+
+        <label>Préavis de résiliation
+          <span class="ligne">
+            <input type="number" min="0" name="preavis_valeur" value="0">
+            <select name="preavis_unite"><option value="jours">jours</option><option value="mois">mois</option></select>
+          </span>
+        </label>
+        <label>M'alerter (jours avant l'action)<input type="number" min="0" name="alerte_jours" value="30"></label>
+
+        <label>Montant (€)<input type="number" step="0.01" name="montant"></label>
+        <label>Périodicité
+          <select name="periodicite">
+            <option value="">—</option><option>Mensuel</option><option>Trimestriel</option>
+            <option>Semestriel</option><option>Annuel</option><option>Ponctuel</option>
+          </select>
+        </label>
+
+        <label class="case"><input type="checkbox" name="resilie"> Contrat résilié</label>
+        <label class="large">Notes<textarea name="notes" rows="3"></textarea></label>
+      </div>
+      <p class="erreur" id="erreur" hidden></p>
+      <div class="pied">
+        <button type="button" class="bouton danger" id="btn-supprimer" hidden>Supprimer</button>
+        <span class="espace"></span>
+        <button type="button" class="bouton secondaire" id="btn-annuler">Annuler</button>
+        <button type="submit" class="bouton">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+  <datalist id="categories"></datalist>
+
+  <script src="app.js"></script>
+</body>
+</html>
